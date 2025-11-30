@@ -95,3 +95,8 @@ h1, h2, h3, strong {
   margin: 0;
   color: #2c3e50;
 }
+
+/* Cacher la navbar globale Home/Stats */
+.nav.nav-tabs#pages {
+  display: none;
+}
