@@ -1,3 +1,4 @@
+# ui.R
 library(shiny)
 
 ui <- fluidPage(
@@ -8,12 +9,14 @@ ui <- fluidPage(
     tags$style(HTML("
       .card-btn { border: none !important; background: none !important; padding: 0 !important; width: 100%; text-align: left; }
       .card-btn > div { pointer-events: none; }
-      .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; }
+      .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; cursor: pointer; }
       .card-horizontal { position: relative; }
     "))
   ),
   
-  tabsetPanel(id = "pages",
+  tabsetPanel(id = "pages", type = "hidden", # type="hidden" masque les onglets standards pour utiliser ta navigation custom
+    
+    # ------------------- PAGE HOME -------------------
     tabPanel("home", value = "home",
       div(style = "text-align: center; margin-bottom: 20px;",
           h1("Explorez le Grand Chelem 2013"),
@@ -22,7 +25,7 @@ ui <- fluidPage(
           )
       ),
       
-      # Cartes 2x2
+      # Cartes Tournois (Ligne 1)
       fluidRow(
         column(6,
                div(class = "card-horizontal",
@@ -38,8 +41,7 @@ ui <- fluidPage(
                            img(src = "images/australia_open.png", height = "150px")
                        )
                    ),
-                   tags$a(class = "card-overlay", href = "#", 
-                          onclick = "Shiny.setInputValue('tournament_selected', 'Australian Open', {priority: 'event'})")
+                   tags$a(class = "card-overlay", onclick = "Shiny.setInputValue('tournament_selected', 'Australian Open', {priority: 'event'})")
                )
         ),
         column(6,
@@ -56,11 +58,12 @@ ui <- fluidPage(
                            img(src = "images/french_open.png", height = "150px")
                        )
                    ),
-                   tags$a(class = "card-overlay", href = "#", 
-                          onclick = "Shiny.setInputValue('tournament_selected', 'Roland Garros', {priority: 'event'})")
+                   tags$a(class = "card-overlay", onclick = "Shiny.setInputValue('tournament_selected', 'Roland Garros', {priority: 'event'})")
                )
         )
       ),
+      
+      # Cartes Tournois (Ligne 2)
       fluidRow(
         column(6,
                div(class = "card-horizontal",
@@ -76,8 +79,7 @@ ui <- fluidPage(
                            img(src = "images/wimbledon_open.png", height = "150px")
                        )
                    ),
-                   tags$a(class = "card-overlay", href = "#", 
-                          onclick = "Shiny.setInputValue('tournament_selected', 'Wimbledon', {priority: 'event'})")
+                   tags$a(class = "card-overlay", onclick = "Shiny.setInputValue('tournament_selected', 'Wimbledon', {priority: 'event'})")
                )
         ),
         column(6,
@@ -94,13 +96,13 @@ ui <- fluidPage(
                            img(src = "images/us_open.png", height = "150px")
                        )
                    ),
-                   tags$a(class = "card-overlay", href = "#", 
-                          onclick = "Shiny.setInputValue('tournament_selected', 'US Open', {priority: 'event'})")
+                   tags$a(class = "card-overlay", onclick = "Shiny.setInputValue('tournament_selected', 'US Open', {priority: 'event'})")
                )
         )
       ),
       
-      # Totaux sur home
+      # Totaux Globaux
+      br(),
       fluidRow(
         column(3, offset = 3,
                div(class = "card-horizontal totals",
@@ -124,12 +126,13 @@ ui <- fluidPage(
         )
       )
     ),
+    
     # ------------------- PAGE STATS -------------------
     tabPanel("stats", value = "stats",
-        actionButton("go_home", "Retour à l'accueil"),
+        actionButton("go_home", "Retour à l'accueil", icon = icon("arrow-left"), style="margin-bottom: 15px;"),
 
-        # Card avec infos du tournoi
-        div(class = "card-horizontal",
+        # Card en-tête tournoi
+        div(class = "card-horizontal", style="margin-bottom: 20px;",
             div(class = "card-content", style = "display: flex; align-items: center; justify-content: space-between;",
                 div(style = "flex-grow: 1;",
                     h2(textOutput("gc_name")),
@@ -138,42 +141,72 @@ ui <- fluidPage(
                     p(textOutput("gc_surface"))
                 ),
                 div(style = "margin-left: 20px;",
-                    img(src = "images/placeholder_logo.png", height = "150px")
+                    # Placeholder, tu pourras rendre l'image dynamique plus tard
+                    img(src = "images/placeholder_logo.png", height = "100px")
                 )
             )
         ),
 
-        # Navbar pour Homme/Femme
+        # Onglets Hommes / Femmes
         tabsetPanel(id = "gender_tabs",
+        # ui.R (Mise à jour de la fluidRow dans tabPanel "Hommes")
+
             tabPanel("Hommes",
+                br(),
                 fluidRow(
+                    # Carte 1 : Total Matchs
                     column(4,
                         div(class = "card-horizontal totals",
-                            div(class = "card-content",
-                                div(class = "card-text",
-                                    strong("Total de matchs"),
-                                    textOutput("total_matchs_men")
-                                )
+                            div(class = "card-content", strong("Total Matchs"), textOutput("total_matchs_men"))
+                        )
+                    ),
+                    # Carte 2 : Moyenne Aces
+                    column(4,
+                        div(class = "card-horizontal totals",
+                            div(class = "card-content", strong("Aces Moyens / Match"), textOutput("avg_aces_men"))
+                        )
+                    ),
+                    # Carte 3 : Moyenne Sets (NOUVEAU)
+                    column(4,
+                        div(class = "card-horizontal totals",
+                            div(class = "card-content", 
+                                strong("Sets Moyens / Match"), 
+                                textOutput("avg_sets_men")
                             )
                         )
                     )
                 )
             ),
+            
+            # Et le même ajustement dans tabPanel "Femmes" :
             tabPanel("Femmes",
+                br(),
                 fluidRow(
+                    # Carte 1 : Total Matchs
                     column(4,
                         div(class = "card-horizontal totals",
-                            div(class = "card-content",
-                                div(class = "card-text",
-                                    strong("Total de matchs"),
-                                    textOutput("total_matchs_women")
-                                )
+                            div(class = "card-content", strong("Total Matchs"), textOutput("total_matchs_women"))
+                        )
+                    ),
+                    # Carte 2 : Moyenne Aces
+                    column(4,
+                        div(class = "card-horizontal totals",
+                            div(class = "card-content", strong("Aces Moyens / Match"), textOutput("avg_aces_women"))
+                        )
+                    ),
+                    # Carte 3 : Moyenne Sets (NOUVEAU)
+                    column(4,
+                        div(class = "card-horizontal totals",
+                            div(class = "card-content", 
+                                strong("Sets Moyens / Match"), 
+                                textOutput("avg_sets_women")
                             )
                         )
                     )
                 )
             )
+
         )
     )
-    )
+  )
 )
