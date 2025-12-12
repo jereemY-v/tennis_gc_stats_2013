@@ -1,7 +1,6 @@
-library(shiny)
-
-# Charger UI et server
-source('global.R', chdir = TRUE) # nolint
+# app.R
+source("global.R")
+source("queries.R")
 source("ui.R")
 source("server.R")
 
